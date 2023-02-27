@@ -1,0 +1,47 @@
+<input
+  type="text"
+  id="search"
+  onkeyup="searchGames()"
+  placeholder="Search for games..."
+/>
+<ul id="gameList"></ul>
+
+<script>
+  const apiKey = "FF9AD75AAACFE8E3B9C32E86BBC264EC";
+  const steamId = "76561198835614873";
+  const baseUrl = "https://api.steampowered.com";
+
+  let games = [];
+
+  function getGames() {
+    let url = `${baseUrl}/IPlayerService/GetOwnedGames/v0001/?key=${apiKey}&steamid=${steamId}&format=json`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        games = data.response.games.map((game) => game.name);
+        displayGames();
+      })
+      .catch((error) => console.error(error));
+  }
+
+  function displayGames() {
+    let gameList = document.getElementById("gameList");
+    gameList.innerHTML = "";
+    games.forEach((game) => {
+      let li = document.createElement("li");
+      li.innerText = game;
+      gameList.appendChild(li);
+    });
+  }
+
+  function searchGames() {
+    let search = document.getElementById("search").value.toLowerCase();
+    let filteredGames = games.filter((game) =>
+      game.toLowerCase().includes(search)
+    );
+    games = filteredGames;
+    displayGames();
+  }
+
+  getGames();
+</script>
